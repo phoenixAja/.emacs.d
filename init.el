@@ -34,6 +34,21 @@
 ;;   (quote
 ;;    (rjsx-mode typescript-mode js2-mode which-key helm-lsp deadgrep nginx-mode ace-mc goto-last-change cmake-font-lock vlf keyfreq describe-number dashboard auto-dim-other-buffers zygospore windresize anzu nlinum diminish doom-modeline window-numbering on-screen exec-path-from-shell ace-isearch avy find-temp-file dired-narrow auto-dictionary flyspell-lazy copy-as-format unfill fix-word expand-region multiple-cursors git-timemachine git-messenger helm-ls-git gitconfig-mode gitignore-mode diff-hl helm-projectile projectile flycheck-rust flycheck-pycheckers flycheck-inline flycheck lsp-ui helm-xref cargo hindent company-ghc haskell-mode dumb-jump indent-guide smartparens helm-c-yasnippet yasnippet fic-mode markdown-mode csharp-mode php-mode json-mode swift-mode modern-cpp-font-lock highlight-escape-sequences clang-format string-edit comment-dwim-2 highlight-thing highlight-numbers rainbow-delimiters rainbow-mode dash-at-point bury-successful-compilation cmake-mode company-lsp company-statistics company-flx company flx-ido helpful hydra helm-ag helm-flx helm-gtags helm-swoop helm magit golden-ratio-scroll-screen key-chord beacon auto-compile use-package))))
 ;;>>>>>>> javascript with lsp mode
+; =======
+;     ("ff97c90ea205e380a4be99b2dc8f0da90972e06983091e98ae677eda01a71fa3" default)))
+;  '(org-confirm-babel-evaluate nil)
+;  '(org-default-notes-file (concat org-directory "/notes.org"))
+;  '(org-directory "~/org/")
+;  '(org-export-html-postamble nil)
+;  '(org-export-with-toc nil)
+;  '(org-hide-leading-stars t)
+;  '(org-src-fontify-natively t)
+;  '(org-startup-folded (quote overview))
+;  '(org-startup-indented t)
+;  '(package-selected-packages
+;    (quote
+;     (groovy-mode htmlize org-bullets rjsx-mode typescript-mode js2-mode which-key helm-lsp deadgrep nginx-mode ace-mc goto-last-change cmake-font-lock vlf keyfreq describe-number dashboard auto-dim-other-buffers zygospore windresize anzu nlinum diminish doom-modeline window-numbering on-screen exec-path-from-shell ace-isearch avy find-temp-file dired-narrow auto-dictionary flyspell-lazy copy-as-format unfill fix-word expand-region multiple-cursors git-timemachine git-messenger helm-ls-git gitconfig-mode gitignore-mode diff-hl helm-projectile projectile flycheck-rust flycheck-pycheckers flycheck-inline flycheck lsp-ui helm-xref cargo hindent company-ghc haskell-mode dumb-jump indent-guide smartparens helm-c-yasnippet yasnippet fic-mode markdown-mode csharp-mode php-mode json-mode swift-mode modern-cpp-font-lock highlight-escape-sequences clang-format string-edit comment-dwim-2 highlight-thing highlight-numbers rainbow-delimiters rainbow-mode dash-at-point bury-successful-compilation cmake-mode company-lsp company-statistics company-flx company flx-ido helpful hydra helm-ag helm-flx helm-gtags helm-swoop helm magit golden-ratio-scroll-screen key-chord beacon auto-compile use-package))))
+; >>>>>>> lsp mode for groovy
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -213,6 +228,45 @@
   :config
   (when (memq window-system '(mac ns x))
     (exec-path-from-shell-initialize)))
+
+;;;;; Org Mode ;;;;;
+(require 'org-protocol)
+
+(use-package org-bullets
+  :ensure t
+  :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+(global-set-key "\C-cl" 'org-store-link)
+(global-set-key "\C-ca" 'org-agenda)
+(setq org-log-done t)
+(setq org-agenda-start-on-weekday nil)
+
+(global-set-key (kbd "C-c c") 'org-capture)
+
+(setq org-agenda-files (list "~/org/todo.org"
+                             "~/org/i.org"
+                             "~/org/mcmc_pyro_likelihood.org"
+                             "~/org/ncov_ingest_notes.org"))
+(setq org-capture-templates
+  '(("t" "todo" entry (file+headline "~/org/todo.org" "Tasks")
+     "* TODO [#A] %?\nSCHEDULED: %(org-insert-time-stamp (org-read-date nil t \"+0d\"))\n")))
+
+(use-package htmlize :ensure t)
+
+;; babel stuff
+
+(org-babel-do-load-languages
+  'org-babel-load-languages
+    '((python . t)
+      (emacs-lisp . t)
+      (shell . t)
+      (C . t)
+      (js . t)
+      (ditaa . t)
+      (dot . t)
+      (org . t)
+      (latex . t )))
 
 ;;;;; Bindings ;;;;;
 
@@ -1411,6 +1465,7 @@ in compilation mode."
   (add-hook 'typescript-mode-hook #'lsp)
   (add-hook 'rsjx-mode-hook #'lsp)
   (add-hook 'js2-mode-hook #'lsp)
+  (add-hook 'groovy-mode-hook #'lsp)
 
 
   (setq netrom--general-lsp-hydra-heads
@@ -1694,11 +1749,12 @@ Multiple Cursors
 
   (global-set-key (kbd "C-c m") 'netrom/mc-hydra/body)
 
-  ;; Trigger hydra via some of the normal bindings, too.
-  (global-set-key (kbd "C-c n") 'netrom/mc-hydra/mc/mark-next-like-this)
-  (global-set-key (kbd "C-c p") 'netrom/mc-hydra/mc/mark-previous-like-this)
-  (global-set-key (kbd "C-c a") 'netrom/mc-hydra/mc/mark-all-like-this-dwim)
-  (global-set-key (kbd "C-c l") 'netrom/mc-hydra/mc/edit-lines))
+  ;; ;; Trigger hydra via some of the normal bindings, too.
+  ;; (global-set-key (kbd "C-c n") 'netrom/mc-hydra/mc/mark-next-like-this)
+  ;; (global-set-key (kbd "C-c p") 'netrom/mc-hydra/mc/mark-previous-like-this)
+  ;; (global-set-key (kbd "C-c a") 'netrom/mc-hydra/mc/mark-all-like-this-dwim)
+  ;; (global-set-key (kbd "C-c l") 'netrom/mc-hydra/mc/edit-lines)
+  )
 
 (use-package expand-region
   :config
