@@ -38,7 +38,7 @@
  '(org-startup-indented t)
  '(package-selected-packages
    (quote
-    (groovy-mode htmlize org-bullets rjsx-mode typescript-mode js2-mode which-key helm-lsp deadgrep nginx-mode ace-mc goto-last-change cmake-font-lock vlf keyfreq describe-number dashboard auto-dim-other-buffers zygospore windresize anzu nlinum diminish doom-modeline window-numbering on-screen exec-path-from-shell ace-isearch avy find-temp-file dired-narrow auto-dictionary flyspell-lazy copy-as-format unfill fix-word expand-region multiple-cursors git-timemachine git-messenger helm-ls-git gitconfig-mode gitignore-mode diff-hl helm-projectile projectile flycheck-rust flycheck-pycheckers flycheck-inline flycheck lsp-ui helm-xref cargo hindent company-ghc haskell-mode dumb-jump indent-guide smartparens helm-c-yasnippet yasnippet fic-mode markdown-mode csharp-mode php-mode json-mode swift-mode modern-cpp-font-lock highlight-escape-sequences clang-format string-edit comment-dwim-2 highlight-thing highlight-numbers rainbow-delimiters rainbow-mode dash-at-point bury-successful-compilation cmake-mode company-lsp company-statistics company-flx company flx-ido helpful hydra helm-ag helm-flx helm-gtags helm-swoop helm magit golden-ratio-scroll-screen key-chord beacon auto-compile use-package))))
+    (lsp-python-ms csv-mode groovy-mode htmlize org-bullets rjsx-mode typescript-mode js2-mode which-key helm-lsp deadgrep nginx-mode ace-mc goto-last-change cmake-font-lock vlf keyfreq describe-number dashboard auto-dim-other-buffers zygospore windresize anzu nlinum diminish doom-modeline window-numbering on-screen exec-path-from-shell ace-isearch avy find-temp-file dired-narrow auto-dictionary flyspell-lazy copy-as-format unfill fix-word expand-region multiple-cursors git-timemachine git-messenger helm-ls-git gitconfig-mode gitignore-mode diff-hl helm-projectile projectile flycheck-rust flycheck-pycheckers flycheck-inline flycheck lsp-ui helm-xref cargo hindent company-ghc haskell-mode dumb-jump indent-guide smartparens helm-c-yasnippet yasnippet fic-mode markdown-mode csharp-mode php-mode json-mode swift-mode modern-cpp-font-lock highlight-escape-sequences clang-format string-edit comment-dwim-2 highlight-thing highlight-numbers rainbow-delimiters rainbow-mode dash-at-point bury-successful-compilation cmake-mode company-lsp company-statistics company-flx company flx-ido helpful hydra helm-ag helm-flx helm-gtags helm-swoop helm magit golden-ratio-scroll-screen key-chord beacon auto-compile use-package))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -611,16 +611,6 @@ Command: %(netrom/compilation-command-string)
   :config
   (company-flx-mode +1))
 
-(use-package company-lsp
-  :requires company
-  :config
-  (push 'company-lsp company-backends)
-
-   ;; Disable client-side cache because the LSP server does a better job.
-  (setq company-transformers nil
-        company-lsp-async t
-        company-lsp-cache-candidates nil))
-
 ;;;;; Development ;;;;;
 
 (use-package cmake-font-lock
@@ -922,7 +912,11 @@ in compilation mode."
 
 ;; Python
 (require 'python)
-(setq python-indent-offset 2)
+(setq python-indent-offset 4)
+
+;; re builder
+(require 're-builder)
+(setq reb-re-syntax 'string)
 
 ;; Marks TODO, FIXME etc. clearly.
 (use-package fic-mode
@@ -1413,7 +1407,7 @@ in compilation mode."
   ;; Let clangd use half of the logical cores but one as minimum.
   ;; `-background-index' requires clangd v8+!
   (setq lsp-clients-clangd-args `(,(format "-j=%d" (max 1 (/ (system-cores :logical) 2)))
-                                  "-background-index" "-log=error"))
+                                  "--background-index" "--clang-tidy" "--log=error"))
 
   (add-hook 'c++-mode-hook #'lsp)
   (add-hook 'rust-mode-hook #'lsp)
@@ -1424,7 +1418,6 @@ in compilation mode."
   (add-hook 'rsjx-mode-hook #'lsp)
   (add-hook 'js2-mode-hook #'lsp)
   (add-hook 'groovy-mode-hook #'lsp)
-
 
   (setq netrom--general-lsp-hydra-heads
         '(;; Xref
@@ -1470,10 +1463,13 @@ in compilation mode."
   :requires lsp-mode flycheck
   :config
 
-  (setq lsp-ui-doc-enable t
+    (setq lsp-ui-doc-enable t
         lsp-ui-doc-use-childframe t
         lsp-ui-doc-position 'top
+        lsp-ui-doc-frame t
         lsp-ui-doc-include-signature t
+        lsp-ui-sideline-show-hover t
+        lsp-ui-sideline-show-code-actions t
         lsp-ui-sideline-enable nil
         lsp-ui-flycheck-enable t
         lsp-ui-flycheck-list-position 'right
@@ -2482,3 +2478,4 @@ search when the prefix argument is defined."
 ;;;;;;;;;;;;;;;;;;;
 
 (loading-done)
+(put 'downcase-region 'disabled nil)
